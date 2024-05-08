@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\Permissions\Permission;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -43,20 +45,18 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function permissions(): BelongsToMany
+    public function role()
     {
-        return $this->belongsToMany(Permission::class);
-    } 
+       return $this->belongsTo(\App\Models\Permissions\Role::class, 'user_roles', 'user_id', 'role_id' );
+    }
 
-    public function givePermissions(array $permission): void
+    public function permissions()
     {
-        $q = Permission::query()->firstOrCreate(compact('permission'));
-
-        $this->permissions()->sync($permission);
+        return $this->role->permissions;
     }
 
     public function hasPermissionTo(string $permission): bool
     {
-        return $this->permissions()->where('permission', $permission)->exists();
+        return $this->role->permissions()->where('name', $permission)->exists();
     }
 }

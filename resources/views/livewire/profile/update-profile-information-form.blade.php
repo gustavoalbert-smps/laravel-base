@@ -11,6 +11,8 @@ new class extends Component
 {
     public string $name = '';
     public string $email = '';
+    public bool $status = false;
+    public array $options = [];
 
     /**
      * Mount the component.
@@ -19,6 +21,11 @@ new class extends Component
     {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->status = (bool) Auth::user()->status;
+        $this->options = [
+            0 => 'Inactive',
+            1 => 'Active'
+        ];
     }
 
     /**
@@ -103,6 +110,12 @@ new class extends Component
                     @endif
                 </div>
             @endif
+        </div>
+
+        <div>
+            <x-input-label for="status" :value="__('Status')" />
+            <x-select :selected="$status" :options="$options" class="mt-1 block w-full" name="status" required autocomplete="status" />
+            <x-input-error class="mt-2" :messages="$errors->get('status')" />
         </div>
 
         <div class="flex items-center gap-4">

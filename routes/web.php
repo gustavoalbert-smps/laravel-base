@@ -23,4 +23,8 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
+Route::controller(\App\Http\Controllers\AdminController::class)->group(function () {
+    Route::get('/admin', 'index')->name('admin');
+});
+
 require __DIR__.'/auth.php';

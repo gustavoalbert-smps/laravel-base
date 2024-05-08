@@ -13,15 +13,62 @@ return new class extends Migration
     {
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
-            $table->string('permission');
+            $table->integer('group_id')->nullable()->unsigned();
+            $table->string('name');
+            $table->string('display_name');
+            $table->smallInteger('sort')->default(0)->unsigned();
             $table->timestamps();
         });
 
-        Schema::create('permission_user', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Permission::class);
-            $table->foreignIdFor(\App\Models\User::class);
+            $table->string('name')->unique();
+            $table->smallInteger('sort')->default(0)->unsigned();
             $table->timestamps();
+        });
+
+         Schema::create('groups', function (Blueprint $table) {
+            $table->id();
+            $table->integer('parent_id')->nullable();
+            $table->string('name');
+            $table->smallInteger('sort')->default(0);
+            $table->timestamps();
+        });
+
+        Schema::create('user_roles', function ($table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('role_id')->unsigned();
+
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->constrained()
+                ->onDelete('cascade');
+
+            $table->foreign('role_id')
+                ->references('id')
+                ->on('roles')
+                ->constrained()
+                ->onDelete('cascade');
+        });
+
+        Schema::create('permission_roles', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('permission_id')->unsigned();
+            $table->unsignedBigInteger('role_id')->unsigned();
+
+            $table->foreign('permission_id')
+                ->references('id')
+                ->on('permissions')
+                ->constrained()
+                ->onDelete('cascade');
+
+            $table->foreign('role_id')
+                ->references('id')
+                ->on('roles')
+                ->constrained()
+                ->onDelete('cascade');
         });
     }
 
@@ -30,7 +77,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('user_roles');
+        Schema::dropIfExists('permission_roles');
+        Schema::dropIfExists('roles');
         Schema::dropIfExists('permissions');
-        Schema::dropIfExists('permission_user');
+        Schema::dropIfExists('groups');
     }
 };
