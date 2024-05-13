@@ -35,11 +35,13 @@ new class extends Component
                     </x-nav-link>
                 </div>
 
+                @can('admin-menu')    
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('admin')" :active="request()->routeIs('admin')" wire:navigate>
                         Admin
                     </x-nav-link>
                 </div>
+                @endcan
             </div>
 
             <!-- Settings Dropdown -->

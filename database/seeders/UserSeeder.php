@@ -8,7 +8,7 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Models\Permissions\UserRole;
 
-class TenantSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -22,8 +22,7 @@ class TenantSeeder extends Seeder
                 'name' => 'Super Admin',
                 'email' => 'super@admin.com',
                 'password' =>  bcrypt('$up3r4dmin'),
-                'active' =>  true,
-                'tenant_id' => 1
+                'status' =>  true,
             ]);
 
             UserRole::firstOrCreate([

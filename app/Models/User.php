@@ -47,7 +47,7 @@ class User extends Authenticatable
 
     public function role()
     {
-       return $this->belongsTo(\App\Models\Permissions\Role::class, 'user_roles', 'user_id', 'role_id' );
+       return $this->belongsToMany(\App\Models\Permissions\Role::class, 'user_roles', 'user_id', 'role_id' );
     }
 
     public function permissions()
@@ -57,6 +57,9 @@ class User extends Authenticatable
 
     public function hasPermissionTo(string $permission): bool
     {
-        return $this->role->permissions()->where('name', $permission)->exists();
+        if ($this->role[0])
+            return $this->role[0]->permissions()->where('name', $permission)->exists();
+        else
+           return false;
     }
 }

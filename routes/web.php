@@ -27,4 +27,10 @@ Route::controller(\App\Http\Controllers\AdminController::class)->group(function 
     Route::get('/admin', 'index')->name('admin');
 });
 
+Route::name('admin.')->group(function() {
+    Route::controller(\App\Http\Controllers\RoleController::class)->group(function () {
+        Route::get('/edit/{id}', 'edit')->name('role.edit');
+    });
+});
+
 require __DIR__.'/auth.php';
