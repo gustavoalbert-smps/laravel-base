@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Permissions\Group;
 use App\Models\Permissions\Permission;
 use App\Models\Permissions\Role;
+use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
@@ -22,21 +23,30 @@ class RoleController extends Controller
 
         foreach ($groups as $group) {
             $data[$group->id] = [ 
-                'text' => $group->name,
-                'expanded' => true,
-                'icon' => 'bi bi-dash-square-dotted'
+                'label' => $group->name,
             ];
 
             $permissions = Permission::where('group_id', $group->id)->get();
             
             foreach ($permissions as $permission) {
-                $data[$group->id]['nodes'][] = [
-                    'text' => $permission->display_name,
-                    'icon' => 'bi bi-dash-square-dotted'
+                $data[$group->id]['childs'][] = [
+                    'label' => $permission->display_name,
+                    'name'  => 'permissions[]',
+                    'value' => $permission->id
                 ];
             }
         }
 
         return view('admin.role.edit', compact('role','data'));
+    }
+
+    public function update($id, Request $request) 
+    {
+        $role = Role::findOrFail($id);
+        
+        $permissions = $request->has('permissions') ? array_map('intval',$request->permissions) : [];
+        $role->permissions()->sync($permissions);
+
+        return redirect()->route('admin');
     }
 }
