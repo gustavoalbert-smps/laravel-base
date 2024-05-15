@@ -23,14 +23,18 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
-Route::controller(\App\Http\Controllers\AdminController::class)->group(function () {
-    Route::get('/admin', 'index')->name('admin');
-});
-
-Route::name('admin.')->group(function() {
-    Route::controller(\App\Http\Controllers\RoleController::class)->group(function () {
-        Route::get('/edit/{id}', 'edit')->name('role.edit');
-        Route::put('{id}', 'update')->name('role.update');
+Route::middleware('auth')->group(function () {
+    Route::controller(\App\Http\Controllers\AdminController::class)->group(function () {
+        Route::get('/admin', 'index')->name('admin');
+    });
+    
+    Route::prefix('role')->group(function () {
+        Route::name('admin.')->group(function() {
+            Route::controller(\App\Http\Controllers\RoleController::class)->group(function () {
+                Route::get('/edit/{id}', 'edit')->name('role.edit');
+                Route::put('{id}', 'update')->name('role.update');
+            });
+        });
     });
 });
 
