@@ -14,4 +14,8 @@ class Group extends Model
         'name',
         'sort'
     ];
+
+    public function parent() {
+        return $this->belongsTo(Group::class, 'parent_id');
+    }
 }

@@ -124,10 +124,14 @@
                         label: item.label,
                         name: item.name,
                         value: item.value,
-                        childs: []
+                        childs: [],
+                        subgroups: []
                     };
                     if (item.childs) {
                         node.childs = convertToTree(item.childs);
+                    }
+                    if (item.subgroups) {
+                        node.subgroups = convertToTree(item.subgroups);
                     }
                     tree.push(node);
                 }
@@ -136,7 +140,6 @@
 
             function checkPermission(permissions) {
                 for (let i = allPermissions[0]; i <= allPermissions.length; i++) {
-                    console.log(i);
                     if (permissions.includes(i)) {
                         let parent = $(`input[type="checkbox"][value="${i}"]`).parent();
 
@@ -145,18 +148,24 @@
                 }
             }
 
-            function generateTreeHtml(data) {
-                let treeHtml = '<ul id="permissions-list">',
-                    havePermission = [];
-
-                data.forEach(item => {
-                    treeHtml += `<li>
+            function generateMenu(data) {
+                let menuHtml = `<li>
                             <input type="checkbox">
-                            <label>${item.label}</label>`;
-                    if (item.childs.length > 0) {
-                        treeHtml += `<ul>`;
-                        item.childs.forEach(child => {
-                            treeHtml += `<li>
+                            <label>${data.label}</label>`,
+                    havePermission = [];
+                    menuHtml += `<ul>`;
+
+                    if (data.hasOwnProperty('subgroups') && data.subgroups.length > 0) {
+                        data.subgroups.forEach(subgroup => {
+                            let object = generateMenu(subgroup);
+                            menuHtml += object.html;
+                            havePermission = Array.from(new Set([...havePermission, ...object.array]));
+                        });
+                    }
+
+                    if (data.childs.length > 0) {
+                        data.childs.forEach(child => {
+                            menuHtml += `<li>
                                     <input type="checkbox" value="${child.value}" name="${child.name}">
                                     <label>${child.label}</label>
                                 </li>`;
@@ -164,9 +173,22 @@
                             if (rolePermissions.includes(child.value))
                                 havePermission.push(child.value);
                         });
-                        treeHtml += '</ul>';
                     }
-                    treeHtml += `</li>`;
+
+                    menuHtml += '</ul>';
+                    menuHtml += `</li>`;
+
+                return { html: menuHtml, array: havePermission };
+            }
+
+            function generateTreeHtml(data) {
+                let treeHtml = '<ul id="permissions-list">',
+                    havePermission = [];
+
+                data.forEach(item => {
+                    let object = generateMenu(item);
+                    treeHtml += object.html;
+                    havePermission = Array.from(new Set([...havePermission, ...object.array]));                    
                 });
 
                 treeHtml += '</ul>';

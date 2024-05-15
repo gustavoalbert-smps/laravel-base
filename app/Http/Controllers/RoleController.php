@@ -25,18 +25,39 @@ class RoleController extends Controller
         $data = [];
 
         foreach ($groups as $group) {
-            $data[$group->id] = [ 
-                'label' => $group->name,
-            ];
+            if (!empty($group->parent_id)) {
+                $sequence = $this->getSequenceGroupIds($group);
 
-            $permissions = Permission::where('group_id', $group->id)->get();
-            
-            foreach ($permissions as $permission) {
-                $data[$group->id]['childs'][] = [
-                    'label' => $permission->display_name,
-                    'name'  => 'permissions[]',
-                    'value' => $permission->id
+                $permissions = Permission::where('group_id', $group->id)->get();
+                $permissionsArray = [];
+                foreach ($permissions as $permission) {
+                    $permissionsArray[] = [
+                        'label' => $permission->display_name,
+                        'name'  => 'permissions[]',
+                        'value' => $permission->id
+                    ];
+                }
+
+                $subgroupData = [
+                    'id' => $group->id,
+                    'label' => $group->name,
                 ];
+
+                $this->addSubgroup($data, $sequence, $subgroupData, $permissionsArray);
+            } else {
+                $data[$group->id] = [ 
+                    'label' => $group->name,
+                ];
+    
+                $permissions = Permission::where('group_id', $group->id)->get();
+                
+                foreach ($permissions as $permission) {
+                    $data[$group->id]['childs'][] = [
+                        'label' => $permission->display_name,
+                        'name'  => 'permissions[]',
+                        'value' => $permission->id
+                    ];
+                }
             }
         }
 
@@ -51,5 +72,42 @@ class RoleController extends Controller
         $role->permissions()->sync($permissions);
 
         return redirect()->route('admin');
+    }
+
+    public function addSubgroup(&$data, $sequence, $subgroupData, $permissions) {
+        $current = &$data;
+        foreach ($sequence as $seq) {
+            if (isset($seq['group'])) {
+                if (!isset($current[$seq['group']])) {
+                    $current[$seq['group']] = ['subgroups' => []];
+                }
+                $current = &$current[$seq['group']]['subgroups'];
+            } elseif (isset($seq['subgroup'])) {
+                if (!isset($current[$seq['subgroup']])) {
+                    $current[$seq['subgroup']] = ['subgroups' => []];
+                }
+                $current = &$current[$seq['subgroup']]['subgroups'];
+            }
+        }
+    
+        $current[$subgroupData['id']] = [
+            'label' => $subgroupData['label'],
+            'childs' => $permissions
+        ];
+    }
+
+    public function getSequenceGroupIds($group) {
+        $sequence = [];
+        $parent = $group->parent;
+
+        while (!empty($parent)) {
+            if (!empty($parent->parent_id))
+                array_unshift($sequence, ['subgroup' => $parent->id]);
+            else
+                array_unshift($sequence, ['group' => $parent->id]);
+            $parent = $parent->parent;
+        }
+
+        return $sequence;
     }
 }
