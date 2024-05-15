@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Permissions\Group;
 use App\Models\Permissions\Permission;
+use App\Models\Permissions\PermissionRole;
 use App\Models\Permissions\Role;
 use Illuminate\Http\Request;
 
@@ -11,14 +12,16 @@ class RoleController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:permission-edit', ['only' => ['edit']]);
+        $this->middleware('can:permission-edit', ['only' => ['edit','update']]);
     }
 
     public function edit($id) 
     {
         $role = Role::findOrFail($id);
-
         $groups = Group::all();
+        $rolePermissions = PermissionRole::where('role_id',$role->id)->get()->pluck('permission_id');
+        $allPermissions = Permission::all()->pluck('id');
+
         $data = [];
 
         foreach ($groups as $group) {
@@ -37,7 +40,7 @@ class RoleController extends Controller
             }
         }
 
-        return view('admin.role.edit', compact('role','data'));
+        return view('admin.role.edit', compact('role','data','rolePermissions','allPermissions'));
     }
 
     public function update($id, Request $request) 

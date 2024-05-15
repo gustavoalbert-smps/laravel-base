@@ -113,6 +113,8 @@
     @section('scripts')
         <script>
             var data = @json($data);
+            var rolePermissions = @json($rolePermissions);
+            var allPermissions = @json($allPermissions);
 
             function convertToTree(data) {
                 let tree = [];
@@ -132,30 +134,46 @@
                 return tree;
             }
 
+            function checkPermission(permissions) {
+                for (let i = allPermissions[0]; i <= allPermissions.length; i++) {
+                    console.log(i);
+                    if (permissions.includes(i)) {
+                        let parent = $(`input[type="checkbox"][value="${i}"]`).parent();
+
+                        $(parent.find('.checktree.checkbox')).trigger('click');
+                    }
+                }
+            }
+
             function generateTreeHtml(data) {
-                let html = '<ul id="permissions-list">';
+                let treeHtml = '<ul id="permissions-list">',
+                    havePermission = [];
 
                 data.forEach(item => {
-                    html += `<li>
+                    treeHtml += `<li>
                             <input type="checkbox">
                             <label>${item.label}</label>`;
                     if (item.childs.length > 0) {
-                        html += `<ul>`;
+                        treeHtml += `<ul>`;
                         item.childs.forEach(child => {
-                            html += `<li>
+                            treeHtml += `<li>
                                     <input type="checkbox" value="${child.value}" name="${child.name}">
                                     <label>${child.label}</label>
                                 </li>`;
+
+                            if (rolePermissions.includes(child.value))
+                                havePermission.push(child.value);
                         });
-                        html += '</ul>';
+                        treeHtml += '</ul>';
                     }
-                    html += `</li>`;
+                    treeHtml += `</li>`;
                 });
 
-                html += '</ul>';
+                treeHtml += '</ul>';
 
-                $('#tree').append(html);
+                $('#tree').append(treeHtml);
                 $('#permissions-list').checkTree();
+                checkPermission(havePermission);
             }
 
             $(document).ready(function() {
