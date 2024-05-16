@@ -46,9 +46,9 @@ to run the Laravel application.
 > _Obviously and not explicitly, the mysql service must be running and with the database defined in its .env created._
 
 ## Examples
-
-![Image of the admin panel to edit roles created in the system.](/public/assets/images/readme_image_1.jpg)
-![Image of the admin panel when editing permissions linked to a role.](/public/assets/images/readme_image_2.jpg)
+Admin Panel                |  Edit Role Permissions
+:-------------------------:|:-------------------------:
+![Image of the admin panel to edit roles created in the system.](/public/assets/images/readme_image_1.jpg)   |  ![Image of the admin panel when editing permissions linked to a role.](/public/assets/images/readme_image_2.jpg)
 
 ## License
 
