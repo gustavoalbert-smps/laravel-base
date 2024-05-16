@@ -45,6 +45,7 @@ to run the Laravel application.
 ```
 php artisan db:seed --class=DatabaseSeeder
 ```
+To create the project's Permissions, roles and Super Admin user.
 
 > [!NOTE]
 > _Obviously and not explicitly, the mysql service must be running and with the database defined in its .env created._
@@ -72,7 +73,7 @@ Permission::firstOrCreate([ //13
 ]);
 ```
 
-Above we have an example of creating a group with a permission that belongs to this group. If necessary, you can create another group and enter the `parent_id` field of the Model **Group**, making it become a subgroup:
+Above we have an example of creating a group with a permission that belongs to this group. If necessary, you can create another group and enter the `parent_id` field of the Model `Group`, making it become a subgroup:
 
 ```
 $admins = Group::firstOrCreate([
