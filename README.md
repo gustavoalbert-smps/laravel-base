@@ -42,6 +42,10 @@ php artisan serve
 ```
 to run the Laravel application.
 
+```
+php artisan db:seed --class=DatabaseSeeder
+```
+
 > [!NOTE]
 > _Obviously and not explicitly, the mysql service must be running and with the database defined in its .env created._
 
@@ -49,6 +53,63 @@ to run the Laravel application.
 Admin Panel                |  Edit Role Permissions
 :-------------------------:|:-------------------------:
 ![Image of the admin panel to edit roles created in the system.](/public/assets/images/readme_image_1.jpg)   |  ![Image of the admin panel when editing permissions linked to a role.](/public/assets/images/readme_image_2.jpg)
+
+## Usage
+
+### Creating new Permissions
+
+In the PermissionSeeder.php file you can see the permissions set by default. The permissions are distributed in groups, groups that will set up the structure to display the permissions when editing a role.
+
+```
+$logs = Group::firstOrCreate([
+            'name' => 'Log'
+]);
+
+Permission::firstOrCreate([ //13
+    'group_id' => $logs->id,
+    'name' => 'log-view',
+    'display_name' => 'Visualizar Log'
+]);
+```
+
+Above we have an example of creating a group with a permission that belongs to this group. If necessary, you can create another group and enter the 'parent_id' field of the Model **Group**, making it become a subgroup.
+
+```
+$admins = Group::firstOrCreate([
+    'name' => 'Admin'
+]);
+
+$adminPanel = Group::firstOrCreate([
+    'name' => 'Admin Panel',
+    'parent_id' => $admins->id
+]);
+
+Permission::firstOrCreate([ //15
+    'group_id' => $adminPanel->id,
+    'name' => 'admin-panel',
+    'display_name' => 'Panel Admin'
+]);
+```
+Now the 'Admin Panel' group is a subgroup of the 'Admin' group.
+
+### Creating new Roles
+
+In the RoleSeeder.php file you can see the default roles already created and the moment at which they are synchronized (**Many to Many Relationship**). Just add or edit roles and synchronize with the permissions you want.
+
+```
+$superAdminRole = Role::firstOrCreate(['id' => 1, 'name' => 'Super Admin']);
+$adminRole = Role::firstOrCreate(['id' => 2, 'name' => 'Admin']);
+$employeeRole = Role::firstOrCreate(['id' => 3, 'name' => 'Funcionário']);
+
+$allPermissions = Permission::all()->pluck('id');
+
+$superAdminRole->permissions()->sync($allPermissions);
+$adminRole->permissions()->sync([1,2,3,4,5,6,7,8,9,10,11,13,15]);
+```
+If you wish, you can not synchronize the permissions at this time and just add them later in the Admin panel.
+
+> [!IMPORTANT]
+> In the UserSeeder.php file you will find the system's 'Super Admin' user to start using, but if you prefer you can just register a new user. (_New users are registered with the 'Admin'_ profile).
 
 ## License
 
