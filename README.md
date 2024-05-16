@@ -2,7 +2,6 @@
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework">v1.0</a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
@@ -19,7 +18,7 @@ Laravel-Base is an application made with Laravel 10, with the aim of speeding up
 - NPM ^9
 - MySQL (Or change laravel settings to run on your preferred DB)
 
-### Commands
+## Commands
 
 ### Installation
 ```
@@ -42,6 +41,8 @@ to run vite and load the Livewire and Volt components.
 php artisan serve
 ```
 to run the Laravel application.
+
+> _And of course not explicitly, the mysql service has to be running and with the database defined in its .env created._
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
