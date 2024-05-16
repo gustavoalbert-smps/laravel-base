@@ -58,7 +58,7 @@ Admin Panel                |  Edit Role Permissions
 
 ### Creating new Permissions
 
-In the PermissionSeeder.php file you can see the permissions set by default. The permissions are distributed in groups, groups that will set up the structure to display the permissions when editing a role.
+In the `PermissionSeeder.php` file you can see the permissions set by default. The permissions are distributed in groups, groups that will set up the structure to display the permissions when editing a role.
 
 ```
 $logs = Group::firstOrCreate([
@@ -72,7 +72,7 @@ Permission::firstOrCreate([ //13
 ]);
 ```
 
-Above we have an example of creating a group with a permission that belongs to this group. If necessary, you can create another group and enter the 'parent_id' field of the Model **Group**, making it become a subgroup.
+Above we have an example of creating a group with a permission that belongs to this group. If necessary, you can create another group and enter the `parent_id` field of the Model **Group**, making it become a subgroup:
 
 ```
 $admins = Group::firstOrCreate([
@@ -90,11 +90,11 @@ Permission::firstOrCreate([ //15
     'display_name' => 'Panel Admin'
 ]);
 ```
-Now the 'Admin Panel' group is a subgroup of the 'Admin' group.
+Now the `Admin Panel` group is a subgroup of the `Admin` group.
 
 ### Creating new Roles
 
-In the RoleSeeder.php file you can see the default roles already created and the moment at which they are synchronized (**Many to Many Relationship**). Just add or edit roles and synchronize with the permissions you want.
+In the `RoleSeeder.php` file you can see the default roles already created and the moment at which they are synchronized (**Many to Many Relationship**). Just add or edit roles and synchronize with the permissions you want.
 
 ```
 $superAdminRole = Role::firstOrCreate(['id' => 1, 'name' => 'Super Admin']);
@@ -109,7 +109,7 @@ $adminRole->permissions()->sync([1,2,3,4,5,6,7,8,9,10,11,13,15]);
 If you wish, you can not synchronize the permissions at this time and just add them later in the Admin panel.
 
 > [!IMPORTANT]
-> In the UserSeeder.php file you will find the system's 'Super Admin' user to start using, but if you prefer you can just register a new user. (_New users are registered with the 'Admin'_ profile).
+> In the `UserSeeder.php file` you will find the system's 'Super Admin' user to start using, but if you prefer you can just register a new user. (_New users are registered with the 'Admin'_ profile).
 
 ## License
 
